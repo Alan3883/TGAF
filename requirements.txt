@@ -1,0 +1,24 @@
+# Core PyTorch + vision
+torch>=2.2.0
+torchvision>=0.17.0
+
+# Numerical & data processing
+numpy>=1.24
+pandas>=2.0
+
+# Vision & image I/O
+opencv-python>=4.8
+Pillow>=10.0
+
+# Tokenization / NLP
+sentencepiece>=0.1.99
+tokenizers>=0.13.0
+transformers>=4.30.0
+
+# Training utilities & logging
+tqdm>=4.66.0
+tensorboard>=2.14.0
+PyYAML>=6.0
+
+# Evaluation
+sacrebleu>=2.4.0

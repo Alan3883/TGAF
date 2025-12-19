@@ -1,0 +1,104 @@
+# ============================================
+# Baseline: TCN Encoder + Transformer Decoder
+# Backbone: ResNet-50 2D features
+# Dataset: MSR-VTT
+# ============================================
+project: vctt_resnet50_baseline
+seed: 2271
+output_dir: outputs/exp_msrvtt_resnet50_baseline
+
+# =====================
+# Data Configuration
+# =====================
+num_workers: 6
+batch_size: 16
+max_frames: 32
+
+# Feature dimensions (must match extracted .npy)
+feature_dim_2d: 2048     # ResNet-50 pool5
+feature_dim_3d: 768      # Swin3D-T features
+feature_dim_obj: 768     # CLIP-ViT pooled object features
+use_3d: true
+use_obj: true
+
+# =====================
+# Dataset Paths
+# =====================
+splits:
+  train: data/msrvtt/splits/msrvtt_train.json
+  val:   data/msrvtt/splits/msrvtt_val.json
+  test:  data/msrvtt/splits/msrvtt_test_1k.json
+
+# Fallback + per-split feature roots
+features_dir: data/msrvtt/features_resnet50
+features_root:
+  train: data/msrvtt/features_resnet50/train
+  val:   data/msrvtt/features_resnet50/val
+  test:  data/msrvtt/features_resnet50/test
+
+# Multi-reference captions for evaluation (20 refs / video)
+msrvtt_raw_captions: data/msrvtt/raw/raw-captions.pkl
+
+# Decoding
+beam_width: 5
+
+# =====================
+# Tokenizer Configuration
+# =====================
+tokenizer:
+  model_path: outputs/spm/bpe16k.model
+  bos_token: <bos>
+  eos_token: <eos>
+  pad_token: <pad>
+
+# =====================
+# Model Configuration
+# =====================
+model:
+  d_model: 512
+  dropout: 0.1
+
+# TCN Encoder
+encoder:
+  layers: 6
+  kernel_size: 3
+  dilations: [1, 2, 4, 8, 16, 32]
+
+# Transformer Decoder
+decoder:
+  num_layers: 3
+  nhead: 8
+  dim_feedforward: 2048
+  max_len: 40
+
+# =====================
+# CLIP Text Encoder (used only if lambda_clip > 0)
+# =====================
+clip:
+  text_encoder: openai/clip-vit-base-patch32
+  temperature: 0.07
+
+# =====================
+# Optimizer & Scheduler
+# =====================
+optim:
+  lr: 1.0e-4
+  betas: [0.9, 0.98]
+  weight_decay: 0.01
+  grad_clip: 1.0
+
+scheduler:
+  type: cosine
+
+# =====================
+# Loss Configuration
+# =====================
+loss:
+  lambda_obj: 0.0    # no object-aware alignment in baseline
+  lambda_clip: 0.0   # pure XE baseline, no CLIP contrastive loss
+
+# =====================
+# Training Configuration
+# =====================
+epochs: 25
+log_every: 50
