@@ -108,10 +108,14 @@ python scripts/build_vocab.py \
 ## ⚡ Pipeline & Training
 
 ### 1. Feature Extraction
+
 <details>
-<summary><b>Click to expand detailed extraction commands</b></summary>
+<summary><b>Commands</b></summary>
+
+<br>
 
 **CLIP-ViT-B/32 (2D Features)**
+
 ```bash
 python -m scripts.extract_features \
   --input_dir data/msrvtt/raw/MSRVTT_Videos/video \
@@ -121,6 +125,7 @@ python -m scripts.extract_features \
 ```
 
 **Swin3D (3D Features)**
+
 ```bash
 python -m scripts.extract_features \
   --input_dir data/msrvtt/raw/MSRVTT_Videos/video \
@@ -130,6 +135,7 @@ python -m scripts.extract_features \
 ```
 
 **Object Features (YOLOv8 + CLIP)**
+
 ```bash
 python -m scripts.extract_object_features \
   --input_dir data/msrvtt/raw/MSRVTT_Videos/video \
@@ -143,6 +149,8 @@ Note: Please repeat the extraction for val and test splits.
 </details>
 
 ### 2. Training Phases
+
+<details> <summary><b>Commands</b></summary> <br>
 
 All training and evaluation are config-driven using the YAML files in `configs/`.
 
@@ -161,6 +169,8 @@ All training and evaluation are config-driven using the YAML files in `configs/`
 | **Eval (+ CLIP Rerank)** | CLIP-guided reranking over top-*K* beams. | `python -m scripts.eval --config configs/msrvtt_vit32_clip_rerank.yaml --checkpoint outputs/exp_msrvtt_vit32_clip/best.pt --clip_rerank --clip_lambda 2.5 --beam_width 3 --beam_rerank_k 3 --length_alpha 0.9 --repetition_penalty 1.1` |
 | **SCST (RL Fine-tuning)** | SCST fine-tuning from an XE checkpoint (optimize CIDEr). | `python -m scripts.train_scst --config configs/msrvtt_vit32.yaml --checkpoint outputs/exp_msrvtt_vit32_clip/best.pt --output_dir outputs/exp_msrvtt_vit32_scst --epochs 3 --batch_size 8 --lr 5e-6 --alpha_xe 1.0 --topk 5` |
 | **Eval (SCST + CLIP Rerank)** | Final evaluation using SCST checkpoint + CLIP reranking. | `python -m scripts.eval --config configs/msrvtt_vit32.yaml --checkpoint outputs/exp_msrvtt_vit32_scst/best_scst.pt --clip_rerank --clip_lambda 2.5 --beam_width 3 --beam_rerank_k 3 --length_alpha 0.9 --repetition_penalty 1.1` |
+
+</details>
 
 ---
 
